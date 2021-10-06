@@ -8,9 +8,7 @@ const bcrypt = require ('bcrypt');
 
 exports.authenticateUser = async (req, res, next) => {
     let errorMessage;
-    console.log(req);
     const credentials = auth(req);
-    console.log(credentials);
 
     if (credentials) {
         const user = await User.findOne({

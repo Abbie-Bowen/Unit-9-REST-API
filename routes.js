@@ -28,7 +28,7 @@ router.get('/users', authenticateUser, asyncHandler(async(req, res) => {
 router.post('/users', asyncHandler(async(req, res) => {
         try {
             await User.create(req.body);
-            res.status(201).json({"message": "Account successfully created."});
+            res.status(201).location('/').end();
         } catch (error) {
             if (error.name === "SequelizeValidationError" || error.name === "SequelizeUniqueConstraintError") {
                 const errors = error.errors.map((err) => err.message);
@@ -100,8 +100,17 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
         const course = await Course.findByPk(req.params.id);
         if (course) {
             if (course.userId == user.id) {
-                await course.update(req.body);
-                res.status(204).end();
+                try {
+                    await course.update(req.body);
+                    res.status(204).end();
+                } catch (error) {
+                    if (error.name === "SequelizeValidationError") {
+                        const errors = error.errors.map((err) => err.message);
+                        res.status(400).json({errors});
+                    } else {
+                        throw error;
+                    }
+                }
             } else {
                 res.status(403).json({message: "You don't have authorization to edit this course."})
             }
