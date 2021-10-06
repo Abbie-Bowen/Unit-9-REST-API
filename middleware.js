@@ -40,6 +40,7 @@ exports.authenticateUser = async (req, res, next) => {
 
 };
 
+// helper function to eliminate try catch blocks in routes
 exports.asyncHandler = (callback) => {
     return async (req, res, next) => {
         try {
